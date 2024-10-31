@@ -1,7 +1,8 @@
-class_name LerpFollow
+class_name LerpLead
 extends CameraControllerBase
 
-@export var follow_speed: float
+@export var lead_speed: float
+@export var catchup_delay_duration: float
 @export var catchup_speed: float
 @export var leash_distance: float
 
@@ -23,21 +24,10 @@ func _process(delta: float) -> void:
 		## the camera and target are at the same position
 		#pass
 	
-	if position.distance_to(target.position) > leash_distance + dist_above_target:
-		var total_dist = position.distance_to(target.position) - dist_above_target
-		var x_dist = target.position.x - position.x
-		var z_dist = target.position.z - position.z
-		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES OR SOMETHING
-		#if x_dist > 0:  # camera needs to move right
-		position.x += (x_dist / total_dist) * (total_dist - leash_distance)
-		position.z += (z_dist / total_dist) * (total_dist - leash_distance)
-		#if x_dist > leash_distance / 2 and z_dist > leash_distance / 2:
-			#position = Vector3(target.position.x - leash_distance / 2, position.y, target.position.z - leash_distance / 2)
-			##position.x = target.position.x + leash_distance / 2
-	
 	# target is moving
 	if !target.velocity.is_zero_approx():
-		position = position.move_toward(Vector3(target.position.x, 0.0, target.position.z), follow_speed * delta)
+		pass
+		#position = position.move_toward(Vector3(target.position.x, 0.0, target.position.z), follow_speed * delta)
 		#position.x = move_toward(position.x, target.position.x, follow_speed * delta)
 		#position.z = move_toward(position.z, target.position.z, follow_speed * delta)
 	elif target.velocity.is_zero_approx() and (position.x != target.position.x or position.z != target.position.z):
@@ -54,6 +44,17 @@ func _process(delta: float) -> void:
 	#elif position.z - target.position.z < -leash_distance:  # camera is too far up
 		#position.z = target.position.z - leash_distance
 		
+	if position.distance_to(target.position) > leash_distance + dist_above_target:
+		var total_dist = position.distance_to(target.position) - dist_above_target
+		var x_dist = target.position.x - position.x
+		var z_dist = target.position.z - position.z
+		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES OR SOMETHING
+		#if x_dist > 0:  # camera needs to move right
+		position.x += (x_dist / total_dist) * (total_dist - leash_distance)
+		position.z += (z_dist / total_dist) * (total_dist - leash_distance)
+		#if x_dist > leash_distance / 2 and z_dist > leash_distance / 2:
+			#position = Vector3(target.position.x - leash_distance / 2, position.y, target.position.z - leash_distance / 2)
+			##position.x = target.position.x + leash_distance / 2
 	
 	super(delta)
 
