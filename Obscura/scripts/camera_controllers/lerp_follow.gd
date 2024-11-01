@@ -19,41 +19,17 @@ func _process(delta: float) -> void:
 	if draw_camera_logic:
 		draw_logic()
 	
-	#if target.velocity.is_zero_approx() and position.x == target.position.x and position.z == target.position.z:
-		## the camera and target are at the same position
-		#pass
-	
-	if position.distance_to(target.position) > leash_distance + dist_above_target:
+	if position.distance_to(target.position) > leash_distance + dist_above_target:  # camera needs to catch up to leash
 		var total_dist = position.distance_to(target.position) - dist_above_target
 		var x_dist = target.position.x - position.x
 		var z_dist = target.position.z - position.z
 		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES OR SOMETHING
-		#if x_dist > 0:  # camera needs to move right
 		position.x += (x_dist / total_dist) * (total_dist - leash_distance)
 		position.z += (z_dist / total_dist) * (total_dist - leash_distance)
-		#if x_dist > leash_distance / 2 and z_dist > leash_distance / 2:
-			#position = Vector3(target.position.x - leash_distance / 2, position.y, target.position.z - leash_distance / 2)
-			##position.x = target.position.x + leash_distance / 2
-	
-	# target is moving
-	if !target.velocity.is_zero_approx():
-		position = position.move_toward(Vector3(target.position.x, 0.0, target.position.z), follow_speed * delta)
-		#position.x = move_toward(position.x, target.position.x, follow_speed * delta)
-		#position.z = move_toward(position.z, target.position.z, follow_speed * delta)
-	elif target.velocity.is_zero_approx() and (position.x != target.position.x or position.z != target.position.z):
-		position = position.move_toward(Vector3(target.position.x, 0.0, target.position.z), catchup_speed * delta)
-	#position = target.position
-	
-	#if position.x - target.position.x > leash_distance:  # camera is too far to the right
-		#position.x = target.position.x + leash_distance
-	#elif position.x - target.position.x < -leash_distance:  # camera is too far to the left
-		#position.x = target.position.x - leash_distance
-	#
-	#if position.z - target.position.z > leash_distance:  # camera is too far down
-		#position.z = target.position.z + leash_distance
-	#elif position.z - target.position.z < -leash_distance:  # camera is too far up
-		#position.z = target.position.z - leash_distance
-		
+	elif !target.velocity.is_zero_approx():  # target is moving
+		position = position.move_toward(Vector3(target.position.x, position.y, target.position.z), follow_speed * delta)
+	elif target.velocity.is_zero_approx() and (position.x != target.position.x or position.z != target.position.z):  # target stopped moving
+		position = position.move_toward(Vector3(target.position.x, position.y, target.position.z), catchup_speed * delta)
 	
 	super(delta)
 
