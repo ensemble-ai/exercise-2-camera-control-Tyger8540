@@ -28,18 +28,23 @@ func _process(delta: float) -> void:
 		var total_dist = position.distance_to(target.position) - dist_above_target
 		var x_dist = target.position.x - position.x
 		var z_dist = target.position.z - position.z
-		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES OR SOMETHING
+		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES
 		position.x += (x_dist / total_dist) * (total_dist - leash_distance) * delta
 		position.z += (z_dist / total_dist) * (total_dist - leash_distance) * delta
 	elif !target.velocity.is_zero_approx():
 		if !$CatchupTimer.is_stopped():
 			$CatchupTimer.stop()
+		
+		# gets the x-direction and z-direction the camera should lead in front of
 		var dir_x = clampf(target.velocity.x, -1.0, 1.0)
 		var dir_z = clampf(target.velocity.z, -1.0, 1.0)
-		if target.velocity.x + target.velocity.z > 2 * target.BASE_SPEED:
+
+		# accounts for hyper speed, giving the camera the same speed as the player
+		if absf(target.velocity.x) > target.BASE_SPEED or absf(target.velocity.z) > target.BASE_SPEED:
 			global_position += target.velocity * delta
-		else:
-			position = position.move_toward(Vector3(target.position.x + dir_x * leash_distance, position.y, target.position.z + dir_z * leash_distance), lead_speed * delta)
+		
+		# leads the player
+		position = position.move_toward(Vector3(target.position.x + dir_x * leash_distance, position.y, target.position.z + dir_z * leash_distance), lead_speed * delta)
 	elif target.velocity.is_zero_approx() and (position.x != target.position.x or position.z != target.position.z):
 		if catchup_ready:
 			position = position.move_toward(Vector3(target.position.x, position.y, target.position.z), catchup_speed * delta)

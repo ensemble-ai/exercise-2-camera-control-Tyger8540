@@ -23,7 +23,7 @@ func _process(delta: float) -> void:
 		var total_dist = position.distance_to(target.position) - dist_above_target
 		var x_dist = target.position.x - position.x
 		var z_dist = target.position.z - position.z
-		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES OR SOMETHING
+		# MOVE THE POSITION PROPORTIONAL TO THE LEASH DISTANCE AND X & Z DISTANCES
 		position.x += (x_dist / total_dist) * (total_dist - leash_distance)
 		position.z += (z_dist / total_dist) * (total_dist - leash_distance)
 	elif !target.velocity.is_zero_approx():  # target is moving
